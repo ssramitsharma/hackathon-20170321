@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<launch>
+
+ <!-- Stage node with "rooms" world and ground truth map publishing -->
+ <include file="$(find amr_stage)/launch/stage.launch">
+<!--   <arg name="world" value="rooms"/> -->
+    <arg name="world" value="octopus"/>
+   <arg name="map" value="true"/>
+ </include>
+
+ <node pkg="hackathon-20170321" type="controller.py" name="controller"/>
+
+</launch>
