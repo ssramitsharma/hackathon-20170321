@@ -5,6 +5,7 @@ from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
 
 youBotOn = False
+coordinateInitialized = False
 startX=0.0
 startY=0.0
 
@@ -25,24 +26,24 @@ def move_callback(message):
 
     if  command == "forward":
         rospy.loginfo("Moving forward ...")
-        twist.linear.x = rospy.get_param("/x_vel", 0.1)
+        twist.linear.x = rospy.get_param("/x_vel", 0.2)
         twist.linear.y = 0
 
     elif command == "backward":
         rospy.loginfo("Moving backward ...")
-        twist.linear.x = rospy.get_param("/x_vel", 0.1) * -1.0
+        twist.linear.x = rospy.get_param("/x_vel", 0.2) * -1.0
         twist.linear.y = 0
 
     elif command == "left":
         rospy.loginfo("Moving left ...")
         twist.linear.x = 0
-        twist.linear.y = rospy.get_param("/y_vel",0.1)
+        twist.linear.y = rospy.get_param("/y_vel",0.2)
         twist.angular.z = rospy.get_param("/theta_val", 0)
 
     elif command == "right":
         rospy.loginfo("Moving right ...")
         twist.linear.x = 0
-        twist.linear.y = rospy.get_param("/y_vel",0.1) * -1.0
+        twist.linear.y = rospy.get_param("/y_vel",0.2) * -1.0
         twist.angular.z = rospy.get_param("/theta_val", 0)
 
     if youBotOn:
@@ -65,8 +66,15 @@ def trigger_callback(message):
         stopYouBot()
 
 def odom_callback(message):
+    global coordinateInitialized
     global startX
     global startY
+
+    if(not coordinateInitialized):
+        coordinateInitialized = True
+        
+        startX = message.pose.pose.position.x
+        startY = message.pose.pose.position.y
 
     currentX = message.pose.pose.position.x
     currentY = message.pose.pose.position.y
@@ -79,6 +87,7 @@ def odom_callback(message):
         startX = currentX
         startY = currentY
 
+        rospy.loginfo("Current position, X: %s, Y: %s" %(startX, startY))
         stopYouBot()
 
 
